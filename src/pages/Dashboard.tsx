@@ -17,6 +17,10 @@ import {
 import { MetricCard } from '@/components/dashboard/MetricCard';
 import { PillarSection } from '@/components/dashboard/PillarSection';
 import { ChartCard } from '@/components/dashboard/ChartCard';
+import { GlobalFilters } from '@/components/dashboard/GlobalFilters';
+import { KPIHeader } from '@/components/dashboard/KPIHeader';
+import { TransactionFlowSection } from '@/components/dashboard/TransactionFlowSection';
+import { FraudHeatmap, VendorRiskPie, IncidentsByCause, GaugeSection } from '@/components/dashboard/AdvancedCharts';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar } from 'recharts';
 
 const uptimeData = [
@@ -49,14 +53,23 @@ const Dashboard = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">DORA Dashboard</h1>
-            <p className="text-muted-foreground">Digital Operational Resilience Act - Risk Metrics</p>
+            <h1 className="text-3xl font-bold text-foreground">Panel de Control de Resiliencia Operacional</h1>
+            <p className="text-muted-foreground">DORA - Monitoreo de Transacciones y Riesgos en Tiempo Real</p>
           </div>
           <div className="text-right">
             <p className="text-sm text-muted-foreground">Última actualización</p>
             <p className="text-sm font-medium">19 Ago 2025, 14:30</p>
           </div>
         </div>
+
+        {/* Global Filters */}
+        <GlobalFilters />
+
+        {/* KPI Header */}
+        <KPIHeader />
+
+        {/* Transaction Flow Section */}
+        <TransactionFlowSection />
 
         {/* Pilar 1: Gestión de Riesgos de TIC */}
         <PillarSection
@@ -145,6 +158,7 @@ const Dashboard = () => {
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
+          <FraudHeatmap />
         </PillarSection>
 
         {/* Pilar 2: Notificación de Incidentes */}
@@ -202,6 +216,7 @@ const Dashboard = () => {
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
+          <IncidentsByCause />
         </PillarSection>
 
         {/* Pilar 3: Pruebas de Resiliencia */}
@@ -239,6 +254,9 @@ const Dashboard = () => {
             icon={<CheckCircle />}
             status="success"
           />
+          <div className="col-span-full">
+            <GaugeSection />
+          </div>
         </PillarSection>
 
         {/* Pilar 4: Gestión de Riesgos de Terceros */}
@@ -275,6 +293,9 @@ const Dashboard = () => {
             icon={<AlertTriangle />}
             status="danger"
           />
+          <div className="col-span-full lg:col-span-2">
+            <VendorRiskPie />
+          </div>
         </PillarSection>
 
         {/* Pilar 5: Intercambio de Información */}
