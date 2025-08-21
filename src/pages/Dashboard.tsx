@@ -22,7 +22,11 @@ import { KPIHeader } from '@/components/dashboard/KPIHeader';
 import { TransactionFlowSection } from '@/components/dashboard/TransactionFlowSection';
 import { FraudHeatmap, VendorRiskPie, IncidentsByCause, GaugeSection } from '@/components/dashboard/AdvancedCharts';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar } from 'recharts';
+import { useDashboardData } from '@/hooks/useDashboardData';
+import { RealTimeDataGenerator } from '@/components/dashboard/RealTimeDataGenerator';
+import { useState } from 'react';
 
+// Bank of America scale mock data
 const uptimeData = [
   { name: 'Jan', uptime: 99.95 },
   { name: 'Feb', uptime: 99.87 },
@@ -33,37 +37,81 @@ const uptimeData = [
 ];
 
 const errorRateData = [
-  { name: 'Semana 1', errors: 0.02 },
-  { name: 'Semana 2', errors: 0.05 },
-  { name: 'Semana 3', errors: 0.01 },
-  { name: 'Semana 4', errors: 0.03 },
+  { name: 'Week 1', errors: 0.02 },
+  { name: 'Week 2', errors: 0.05 },
+  { name: 'Week 3', errors: 0.01 },
+  { name: 'Week 4', errors: 0.03 },
 ];
 
 const incidentData = [
-  { name: 'Crítico', count: 2 },
-  { name: 'Mayor', count: 8 },
-  { name: 'Menor', count: 24 },
+  { name: 'Critical', count: 2 },
+  { name: 'Major', count: 8 },
+  { name: 'Minor', count: 24 },
   { name: 'Info', count: 67 },
 ];
 
 const Dashboard = () => {
+  const [filters, setFilters] = useState({
+    timeRange: '24h',
+    transactionType: 'all',
+    vendor: 'all',
+    region: 'all'
+  });
+
+  const { metrics, transactionData, incidentData: realIncidentData, loading, error } = useDashboardData(filters);
+
+  const handleFiltersChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+            <p className="mt-4 text-muted-foreground">Loading Bank of America operational data...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-500">Error loading data: {error}</p>
+            <p className="text-muted-foreground">Using sample data for demonstration</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background p-6">
+      <RealTimeDataGenerator />
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Panel de Control de Resiliencia Operacional</h1>
-            <p className="text-muted-foreground">DORA - Monitoreo de Transacciones y Riesgos en Tiempo Real</p>
+            <h1 className="text-3xl font-bold text-foreground">Bank of America - Operational Resilience Dashboard</h1>
+            <p className="text-muted-foreground">DORA Compliance - Real-time Transaction & Risk Monitoring</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Processing {metrics.transactionVolume.toLocaleString()} transactions • 
+              {metrics.systemAvailability.toFixed(2)}% system availability
+            </p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-muted-foreground">Última actualización</p>
-            <p className="text-sm font-medium">19 Ago 2025, 14:30</p>
+            <p className="text-sm text-muted-foreground">Last Updated</p>
+            <p className="text-sm font-medium">{new Date().toLocaleString()}</p>
           </div>
         </div>
 
         {/* Global Filters */}
-        <GlobalFilters />
+        <GlobalFilters onFiltersChange={handleFiltersChange} />
 
         {/* KPI Header */}
         <KPIHeader />
@@ -71,45 +119,45 @@ const Dashboard = () => {
         {/* Transaction Flow Section */}
         <TransactionFlowSection />
 
-        {/* Pilar 1: Gestión de Riesgos de TIC */}
+        {/* Pillar 1: ICT Risk Management */}
         <PillarSection
-          title="Pilar 1: Gestión de Riesgos de TIC"
-          subtitle="ICT Risk Management"
+          title="Pillar 1: ICT Risk Management"
+          subtitle="Technology Infrastructure & Risk Controls"
           icon={<Shield className="w-6 h-6 text-primary" />}
         >
           <MetricCard
-            title="Tiempo de Actividad"
-            value="99.98%"
-            subtitle="↑ 0.03% vs mes anterior"
+            title="System Uptime"
+            value={`${metrics.systemAvailability.toFixed(2)}%`}
+            subtitle="↑ 0.03% vs last month"
             icon={<Activity />}
-            status="success"
+            status={metrics.systemAvailability > 99.9 ? "success" : "warning"}
             trend="up"
           />
           <MetricCard
-            title="Tasa de Error en Transacciones"
-            value="0.02%"
-            subtitle="↓ 0.01% vs semana anterior"
+            title="Transaction Error Rate"
+            value={`${metrics.errorRate.toFixed(3)}%`}
+            subtitle="↓ 0.01% vs last week"
             icon={<TrendingDown />}
-            status="success"
+            status={metrics.errorRate < 0.1 ? "success" : "warning"}
             trend="down"
           />
           <MetricCard
-            title="Alertas de Seguridad"
+            title="Security Alerts"
             value="14"
-            subtitle="3 críticas, 11 menores"
+            subtitle="3 critical, 11 minor"
             icon={<AlertTriangle />}
             status="warning"
           />
           <MetricCard
-            title="Precisión de Datos"
+            title="Data Accuracy"
             value="99.94%"
-            subtitle="Validación ETL exitosa"
+            subtitle="ETL validation successful"
             icon={<Database />}
             status="success"
           />
           <ChartCard
-            title="Disponibilidad del Sistema (6 meses)"
-            subtitle="Tiempo de actividad promedio por mes"
+            title="System Availability (6 months)"
+            subtitle="Average uptime percentage by month"
           >
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={uptimeData}>
@@ -134,8 +182,8 @@ const Dashboard = () => {
             </ResponsiveContainer>
           </ChartCard>
           <ChartCard
-            title="Tasa de Error Semanal"
-            subtitle="Porcentaje de transacciones fallidas"
+            title="Weekly Error Rate"
+            subtitle="Percentage of failed transactions"
           >
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={errorRateData}>
@@ -161,44 +209,44 @@ const Dashboard = () => {
           <FraudHeatmap />
         </PillarSection>
 
-        {/* Pilar 2: Notificación de Incidentes */}
+        {/* Pillar 2: ICT-Related Incident Reporting */}
         <PillarSection
-          title="Pilar 2: Notificación de Incidentes"
-          subtitle="ICT-Related Incident Reporting"
+          title="Pillar 2: ICT-Related Incident Reporting"
+          subtitle="Incident Response & Management"
           icon={<AlertCircle className="w-6 h-6 text-primary" />}
         >
           <MetricCard
-            title="Incidentes Activos"
-            value="12"
-            subtitle="2 críticos, 4 mayores"
+            title="Active Incidents"
+            value={metrics.openIncidents.toString()}
+            subtitle="2 critical, 4 major"
             icon={<XCircle />}
-            status="danger"
+            status={metrics.openIncidents === 0 ? "success" : metrics.openIncidents < 3 ? "warning" : "danger"}
           />
           <MetricCard
-            title="MTTR Promedio"
+            title="Average MTTR"
             value="2.3h"
-            subtitle="↓ 15min vs objetivo 4h"
+            subtitle="↓ 15min vs 4h target"
             icon={<Clock />}
             status="success"
             trend="down"
           />
           <MetricCard
-            title="Incidentes resueltos (7d)"
+            title="Incidents Resolved (7d)"
             value="28"
-            subtitle="96% dentro de SLA"
+            subtitle="96% within SLA"
             icon={<CheckCircle />}
             status="success"
           />
           <MetricCard
-            title="RCA Completados"
+            title="RCA Completed"
             value="85%"
-            subtitle="17 de 20 incidentes mayores"
+            subtitle="17 of 20 major incidents"
             icon={<TestTube />}
             status="warning"
           />
           <ChartCard
-            title="Incidentes por Severidad (Mes actual)"
-            subtitle="Distribución de incidentes reportados"
+            title="Incidents by Severity (Current Month)"
+            subtitle="Distribution of reported incidents"
           >
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={incidentData}>
@@ -219,38 +267,38 @@ const Dashboard = () => {
           <IncidentsByCause />
         </PillarSection>
 
-        {/* Pilar 3: Pruebas de Resiliencia */}
+        {/* Pillar 3: Digital Operational Resilience Testing */}
         <PillarSection
-          title="Pilar 3: Pruebas de Resiliencia"
-          subtitle="Digital Operational Resilience Testing"
+          title="Pillar 3: Digital Operational Resilience Testing"
+          subtitle="Security Testing & Vulnerability Management"
           icon={<TestTube className="w-6 h-6 text-primary" />}
         >
           <MetricCard
-            title="Vulnerabilidades Críticas"
-            value="3"
-            subtitle="↓ 2 desde último escaneo"
+            title="Critical Vulnerabilities"
+            value={metrics.criticalVulnerabilities.toString()}
+            subtitle="↓ 2 since last scan"
             icon={<AlertTriangle />}
-            status="warning"
+            status={metrics.criticalVulnerabilities === 0 ? "success" : metrics.criticalVulnerabilities < 5 ? "warning" : "danger"}
             trend="down"
           />
           <MetricCard
             title="Pentesting Score"
             value="87/100"
-            subtitle="Última evaluación Q3 2025"
+            subtitle="Last assessment Q3 2025"
             icon={<Shield />}
             status="success"
           />
           <MetricCard
-            title="RTO Último DR Test"
+            title="RTO Last DR Test"
             value="3h 45m"
-            subtitle="Objetivo: 4h ✓"
+            subtitle="Target: 4h ✓"
             icon={<Server />}
             status="success"
           />
           <MetricCard
             title="BCP Test Coverage"
             value="94%"
-            subtitle="15 de 16 sistemas críticos"
+            subtitle="15 of 16 critical systems"
             icon={<CheckCircle />}
             status="success"
           />
@@ -259,37 +307,37 @@ const Dashboard = () => {
           </div>
         </PillarSection>
 
-        {/* Pilar 4: Gestión de Riesgos de Terceros */}
+        {/* Pillar 4: ICT Third-Party Risk Management */}
         <PillarSection
-          title="Pilar 4: Gestión de Riesgos de Terceros"
-          subtitle="ICT Third-Party Risk Management"
+          title="Pillar 4: ICT Third-Party Risk Management"
+          subtitle="Vendor Risk Assessment & Monitoring"
           icon={<Users className="w-6 h-6 text-primary" />}
         >
           <MetricCard
-            title="Proveedores Críticos"
+            title="Critical Vendors"
             value="23"
-            subtitle="8 con SLA > 99.9%"
+            subtitle="8 with SLA > 99.9%"
             icon={<Users />}
             status="neutral"
           />
           <MetricCard
             title="SLA Compliance"
-            value="98.2%"
-            subtitle="1 proveedor fuera de SLA"
+            value={`${metrics.vendorSlaCompliance.toFixed(1)}%`}
+            subtitle="1 vendor below SLA"
             icon={<TrendingUp />}
-            status="warning"
+            status={metrics.vendorSlaCompliance > 99 ? "success" : "warning"}
           />
           <MetricCard
-            title="Auditorías Pendientes"
+            title="Pending Audits"
             value="4"
             subtitle="2 SOC2, 2 ISO27001"
             icon={<AlertCircle />}
             status="warning"
           />
           <MetricCard
-            title="Riesgo de Concentración"
+            title="Concentration Risk"
             value="82%"
-            subtitle="ABC Corp - Transacciones"
+            subtitle="Fiserv - Transactions"
             icon={<AlertTriangle />}
             status="danger"
           />
@@ -298,25 +346,25 @@ const Dashboard = () => {
           </div>
         </PillarSection>
 
-        {/* Pilar 5: Intercambio de Información */}
+        {/* Pillar 5: Information Sharing */}
         <PillarSection
-          title="Pilar 5: Intercambio de Información"
-          subtitle="Information Sharing"
+          title="Pillar 5: Information Sharing"
+          subtitle="Threat Intelligence & Security Awareness"
           icon={<Share2 className="w-6 h-6 text-primary" />}
         >
           <MetricCard
             title="Training Completion"
-            value="96%"
-            subtitle="Curso Seguridad Q3 2025"
+            value={`${metrics.trainingCompletion.toFixed(1)}%`}
+            subtitle="Security Training Q3 2025"
             icon={<CheckCircle />}
-            status="success"
+            status={metrics.trainingCompletion > 95 ? "success" : "warning"}
           />
           <MetricCard
             title="Phishing Test Rate"
-            value="9%"
-            subtitle="↓ 3% vs trimestre anterior"
+            value={`${metrics.phishingClickRate.toFixed(1)}%`}
+            subtitle="↓ 3% vs previous quarter"
             icon={<TrendingDown />}
-            status="success"
+            status={metrics.phishingClickRate < 10 ? "success" : "warning"}
             trend="down"
           />
           <MetricCard
@@ -327,9 +375,9 @@ const Dashboard = () => {
             status="neutral"
           />
           <MetricCard
-            title="IOCs Procesados (7d)"
+            title="IOCs Processed (7d)"
             value="247"
-            subtitle="12 matched, 0 críticos"
+            subtitle="12 matched, 0 critical"
             icon={<Activity />}
             status="success"
           />
