@@ -93,20 +93,20 @@ export const KPIHeader = () => {
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold text-card-foreground">KPIs Principales</h2>
-          <p className="text-sm text-muted-foreground">Métricas críticas en tiempo real</p>
+          <h2 className="text-2xl font-bold text-card-foreground">Key Performance Indicators</h2>
+          <p className="text-sm text-muted-foreground">Real-time critical metrics</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
-          <span className="text-xs text-muted-foreground">En vivo</span>
+          <span className="text-xs text-muted-foreground">Live</span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
-          title="Disponibilidad Transacciones"
+          title="Transaction Availability"
           value="99.98%"
-          subtitle="Últimas 24h • ↑ 0.03% vs ayer"
+          subtitle="Last 24h • ↑ 0.03% vs yesterday"
           icon={<Activity className="w-4 h-4 text-success" />}
           status="success"
           showSparkline={true}
@@ -115,9 +115,9 @@ export const KPIHeader = () => {
         />
         
         <KPICard
-          title="Tasa Error Sistema"
+          title="System Error Rate"
           value="0.02%"
-          subtitle="Último minuto • 12 errores"
+          subtitle="Last minute • 12 errors"
           icon={<AlertTriangle className="w-4 h-4 text-success" />}
           status="success"
           showSparkline={true}
@@ -126,18 +126,18 @@ export const KPIHeader = () => {
         />
         
         <KPICard
-          title="Fraude Detectado"
+          title="Fraud Detected"
           value="$24,580"
-          subtitle="Hoy • 14 transacciones bloqueadas"
+          subtitle="Today • 14 transactions blocked"
           icon={<DollarSign className="w-4 h-4 text-warning" />}
           status="warning"
           unit="USD"
         />
         
         <KPICard
-          title="Incidentes Mayores"
+          title="Major Incidents"
           value="2"
-          subtitle="1 crítico, 1 alto • MTTR: 2.3h"
+          subtitle="1 critical, 1 high • MTTR: 2.3h"
           icon={<AlertCircle className="w-4 h-4 text-danger" />}
           status="danger"
         />

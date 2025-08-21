@@ -30,32 +30,32 @@ export const GlobalFilters = ({ onFiltersChange }: GlobalFiltersProps) => {
   };
 
   const timeRanges = [
-    { value: '1h', label: 'Última hora' },
-    { value: '24h', label: 'Últimas 24 horas' },
-    { value: '7d', label: 'Últimos 7 días' },
-    { value: '30d', label: 'Últimos 30 días' },
-    { value: '90d', label: 'Últimos 90 días' },
+    { value: '1h', label: 'Last Hour' },
+    { value: '24h', label: 'Last 24 Hours' },
+    { value: '7d', label: 'Last 7 Days' },
+    { value: '30d', label: 'Last 30 Days' },
+    { value: '90d', label: 'Last 90 Days' },
   ];
 
   const transactionTypes = [
-    { value: 'all', label: 'Todos' },
-    { value: 'credit', label: 'Crédito' },
-    { value: 'debit', label: 'Débito' },
+    { value: 'all', label: 'All Types' },
+    { value: 'credit', label: 'Credit' },
+    { value: 'debit', label: 'Debit' },
   ];
 
   const vendors = [
-    { value: 'all', label: 'Todos los Proveedores' },
-    { value: 'fiserv', label: 'Fiserv' },
-    { value: 'fis', label: 'FIS' },
-    { value: 'stripe', label: 'Stripe' },
-    { value: 'adyen', label: 'Adyen' },
+    { value: 'all', label: 'All Vendors' },
+    { value: 'Fiserv', label: 'Fiserv' },
+    { value: 'FIS', label: 'FIS' },
+    { value: 'Stripe', label: 'Stripe' },
+    { value: 'Adyen', label: 'Adyen' },
   ];
 
   const regions = [
-    { value: 'all', label: 'Todas las Regiones' },
-    { value: 'na', label: 'Norte América' },
-    { value: 'emea', label: 'EMEA' },
-    { value: 'latam', label: 'LATAM' },
+    { value: 'all', label: 'All Regions' },
+    { value: 'NA', label: 'North America' },
+    { value: 'EMEA', label: 'EMEA' },
+    { value: 'LATAM', label: 'LATAM' },
   ];
 
   return (
@@ -63,7 +63,7 @@ export const GlobalFilters = ({ onFiltersChange }: GlobalFiltersProps) => {
       <div className="flex items-center gap-4 flex-wrap">
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-card-foreground">Filtros Globales:</span>
+          <span className="text-sm font-medium text-card-foreground">Global Filters:</span>
         </div>
         
         <div className="flex items-center gap-2">
@@ -123,7 +123,7 @@ export const GlobalFilters = ({ onFiltersChange }: GlobalFiltersProps) => {
 
         <Button variant="outline" size="sm" className="ml-auto">
           <RefreshCw className="w-4 h-4 mr-2" />
-          Actualizar
+          Refresh
         </Button>
       </div>
     </Card>
