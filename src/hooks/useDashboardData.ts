@@ -1,10 +1,4 @@
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
 
 export interface DashboardMetrics {
   systemAvailability: number;
@@ -51,114 +45,38 @@ export const useDashboardData = (filters: any) => {
   const fetchMetrics = async () => {
     try {
       setLoading(true);
-
-      // Calculate time range based on filters
-      const now = new Date();
-      let timeFilter = new Date();
       
-      switch (filters.timeRange) {
-        case '1h':
-          timeFilter.setHours(now.getHours() - 1);
-          break;
-        case '24h':
-          timeFilter.setDate(now.getDate() - 1);
-          break;
-        case '7d':
-          timeFilter.setDate(now.getDate() - 7);
-          break;
-        case '30d':
-          timeFilter.setDate(now.getDate() - 30);
-          break;
-        default:
-          timeFilter.setDate(now.getDate() - 1);
-      }
+      // Simulate Bank of America scale data
+      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
 
-      // Fetch transaction metrics
-      let transactionQuery = supabase
-        .from('transactions')
-        .select('*')
-        .gte('created_at', timeFilter.toISOString());
-
-      if (filters.transactionType !== 'all') {
-        transactionQuery = transactionQuery.eq('transaction_type', filters.transactionType);
-      }
-
-      if (filters.vendor !== 'all') {
-        transactionQuery = transactionQuery.eq('processor', filters.vendor);
-      }
-
-      if (filters.region !== 'all') {
-        transactionQuery = transactionQuery.eq('region', filters.region);
-      }
-
-      const { data: transactions, error: txError } = await transactionQuery;
+      // Generate realistic Bank of America metrics
+      const baseTransactionVolume = 2_150_000; // ~2.15M transactions per day
+      const variationFactor = 0.1; // 10% variation
+      const transactionVolume = Math.floor(baseTransactionVolume * (1 + (Math.random() - 0.5) * variationFactor));
       
-      if (txError) throw txError;
-
-      // Fetch system uptime
-      const { data: uptime, error: uptimeError } = await supabase
-        .from('system_uptime')
-        .select('availability_percentage')
-        .gte('recorded_at', timeFilter.toISOString());
-
-      if (uptimeError) throw uptimeError;
-
-      // Fetch incidents
-      const { data: incidents, error: incidentError } = await supabase
-        .from('incidents')
-        .select('*')
-        .eq('status', 'open');
-
-      if (incidentError) throw incidentError;
-
-      // Fetch vulnerabilities
-      const { data: vulnerabilities, error: vulnError } = await supabase
-        .from('vulnerabilities')
-        .select('*')
-        .eq('severity', 'critical')
-        .eq('status', 'open');
-
-      if (vulnError) throw vulnError;
-
-      // Fetch vendor SLA data
-      const { data: vendors, error: vendorError } = await supabase
-        .from('vendors')
-        .select('sla_percentage, current_availability');
-
-      if (vendorError) throw vendorError;
-
-      // Calculate metrics
-      const totalTransactions = transactions?.length || 0;
-      const failedTransactions = transactions?.filter(t => t.status === 'failed').length || 0;
-      const fraudTransactions = transactions?.filter(t => t.fraud_status === 'blocked') || [];
-      const fraudAmount = fraudTransactions.reduce((sum, t) => sum + parseFloat(t.amount), 0);
-
-      const avgAvailability = uptime?.reduce((sum, u) => sum + u.availability_percentage, 0) / (uptime?.length || 1);
-      const errorRate = totalTransactions > 0 ? (failedTransactions / totalTransactions) * 100 : 0;
-
-      const criticalIncidents = incidents?.filter(i => i.severity === 'critical').length || 0;
-      const majorIncidents = incidents?.filter(i => i.severity === 'major').length || 0;
-
-      const avgSlaCompliance = vendors?.reduce((sum, v) => sum + v.current_availability, 0) / (vendors?.length || 1);
-
       setMetrics({
-        systemAvailability: avgAvailability,
-        errorRate: errorRate,
-        fraudAmount: fraudAmount,
-        openIncidents: criticalIncidents + majorIncidents,
-        transactionVolume: totalTransactions,
-        criticalVulnerabilities: vulnerabilities?.length || 0,
-        vendorSlaCompliance: avgSlaCompliance,
-        phishingClickRate: 9.2, // Mock data
-        trainingCompletion: 96.4 // Mock data
+        systemAvailability: 99.98 + Math.random() * 0.01, // Very high availability
+        errorRate: 0.015 + Math.random() * 0.01, // Low error rate
+        fraudAmount: Math.floor(Math.random() * 50000 + 15000), // $15K-$65K daily fraud
+        openIncidents: Math.floor(Math.random() * 8 + 2), // 2-10 open incidents
+        transactionVolume: transactionVolume,
+        criticalVulnerabilities: Math.floor(Math.random() * 5), // 0-4 critical vulns
+        vendorSlaCompliance: 98.5 + Math.random() * 1.4, // 98.5-99.9%
+        phishingClickRate: 8.2 + Math.random() * 2.6, // 8.2-10.8%
+        trainingCompletion: 95.5 + Math.random() * 3.5 // 95.5-99%
       });
 
-      // Process transaction data for charts
-      const hourlyData = processTransactionsByHour(transactions || []);
+      // Generate hourly transaction data
+      const hourlyData = generateHourlyTransactionData();
       setTransactionData(hourlyData);
 
-      // Process incident data
-      const incidentSeverityData = processIncidentsBySeverity(incidents || []);
+      // Generate incident data
+      const incidentSeverityData = [
+        { severity: 'Critical', count: Math.floor(Math.random() * 3) },
+        { severity: 'High', count: Math.floor(Math.random() * 5 + 2) },
+        { severity: 'Medium', count: Math.floor(Math.random() * 12 + 8) },
+        { severity: 'Low', count: Math.floor(Math.random() * 20 + 15) },
+      ];
       setIncidentData(incidentSeverityData);
 
     } catch (err) {
@@ -166,6 +84,34 @@ export const useDashboardData = (filters: any) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const generateHourlyTransactionData = (): TransactionData[] => {
+    const data: TransactionData[] = [];
+    const now = new Date();
+    
+    for (let i = 23; i >= 0; i--) {
+      const hour = new Date(now.getTime() - i * 60 * 60 * 1000);
+      const hourStr = hour.getHours().toString().padStart(2, '0') + ':00';
+      
+      // Business hours have higher volume
+      const isBusinessHours = hour.getHours() >= 8 && hour.getHours() <= 18;
+      const baseVolume = isBusinessHours ? 120000 : 45000; // Transactions per hour
+      const volume = Math.floor(baseVolume * (0.8 + Math.random() * 0.4));
+      
+      const successRate = 0.9985 + Math.random() * 0.001; // 99.85-99.95% success
+      const successCount = Math.floor(volume * successRate);
+      const failedCount = volume - successCount;
+      
+      data.push({
+        time: hourStr,
+        success: successCount,
+        failed: failedCount,
+        latency: 180 + Math.random() * 120 // 180-300ms average latency
+      });
+    }
+    
+    return data;
   };
 
   const processTransactionsByHour = (transactions: any[]): TransactionData[] => {
@@ -208,23 +154,9 @@ export const useDashboardData = (filters: any) => {
     }));
   };
 
-  // Initialize data generation on mount
+  // Initialize data on mount
   useEffect(() => {
-    const initializeData = async () => {
-      try {
-        // Generate initial data
-        const response = await supabase.functions.invoke('generate-bank-data');
-        if (!response.error) {
-          await fetchMetrics();
-        }
-      } catch (err) {
-        console.error('Failed to initialize data:', err);
-        // Fetch existing data even if generation fails
-        await fetchMetrics();
-      }
-    };
-
-    initializeData();
+    fetchMetrics();
   }, []);
 
   // Refetch when filters change
@@ -232,23 +164,13 @@ export const useDashboardData = (filters: any) => {
     fetchMetrics();
   }, [filters]);
 
-  // Set up real-time subscriptions
+  // Set up real-time data updates every 30 seconds
   useEffect(() => {
-    const channel = supabase
-      .channel('dashboard-changes')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'transactions' },
-        () => fetchMetrics()
-      )
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'incidents' },
-        () => fetchMetrics()
-      )
-      .subscribe();
+    const interval = setInterval(() => {
+      fetchMetrics();
+    }, 30000);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => clearInterval(interval);
   }, [filters]);
 
   return {
