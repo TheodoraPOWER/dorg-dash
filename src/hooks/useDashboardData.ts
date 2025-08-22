@@ -114,45 +114,6 @@ export const useDashboardData = (filters: any) => {
     return data;
   };
 
-  const processTransactionsByHour = (transactions: any[]): TransactionData[] => {
-    const hourlyMap = new Map();
-    
-    transactions.forEach(t => {
-      const hour = new Date(t.created_at).getHours();
-      const key = `${hour}:00`;
-      
-      if (!hourlyMap.has(key)) {
-        hourlyMap.set(key, { time: key, success: 0, failed: 0, latencies: [] });
-      }
-      
-      const data = hourlyMap.get(key);
-      if (t.status === 'success') {
-        data.success++;
-      } else {
-        data.failed++;
-      }
-      data.latencies.push(t.latency_ms);
-    });
-
-    return Array.from(hourlyMap.values()).map(d => ({
-      ...d,
-      latency: d.latencies.reduce((sum: number, l: number) => sum + l, 0) / (d.latencies.length || 1)
-    })).sort((a, b) => a.time.localeCompare(b.time));
-  };
-
-  const processIncidentsBySeverity = (incidents: any[]): IncidentData[] => {
-    const severityMap = new Map();
-    
-    incidents.forEach(i => {
-      const severity = i.severity;
-      severityMap.set(severity, (severityMap.get(severity) || 0) + 1);
-    });
-
-    return Array.from(severityMap.entries()).map(([severity, count]) => ({
-      severity: severity.charAt(0).toUpperCase() + severity.slice(1),
-      count
-    }));
-  };
 
   // Initialize data on mount
   useEffect(() => {
