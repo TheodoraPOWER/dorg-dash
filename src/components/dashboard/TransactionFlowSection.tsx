@@ -6,28 +6,28 @@ import { useState } from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from 'recharts';
 
 const funnelData = [
-  { stage: 'Start', count: 100000, percentage: 100, color: 'hsl(var(--success))' },
+  { stage: 'Inicio', count: 100000, percentage: 100, color: 'hsl(var(--success))' },
   { stage: 'Gateway', count: 99850, percentage: 99.85, color: 'hsl(var(--success))' },
-  { stage: 'Fraud Check', count: 99200, percentage: 99.2, color: 'hsl(var(--warning))' },
-  { stage: 'Authorization', count: 97500, percentage: 97.5, color: 'hsl(var(--warning))' },
-  { stage: 'Issuer Response', count: 96800, percentage: 96.8, color: 'hsl(var(--danger))' },
-  { stage: 'Confirmation', count: 96500, percentage: 96.5, color: 'hsl(var(--success))' },
+  { stage: 'Fraude Check', count: 99200, percentage: 99.2, color: 'hsl(var(--warning))' },
+  { stage: 'Autorización', count: 97500, percentage: 97.5, color: 'hsl(var(--warning))' },
+  { stage: 'Respuesta Emisor', count: 96800, percentage: 96.8, color: 'hsl(var(--danger))' },
+  { stage: 'Confirmación', count: 96500, percentage: 96.5, color: 'hsl(var(--success))' },
 ];
 
 const latencyData = [
-  { stage: 'Payment Gateway', latency: 45, threshold: 100 },
-  { stage: 'Fraud Validation', latency: 280, threshold: 300 },
-  { stage: 'Network Authorization', latency: 150, threshold: 200 },
-  { stage: 'Issuer Response', latency: 320, threshold: 400 },
-  { stage: 'Final Confirmation', latency: 25, threshold: 50 },
+  { stage: 'Gateway de Pago', latency: 45, threshold: 100 },
+  { stage: 'Validación Fraude', latency: 280, threshold: 300 },
+  { stage: 'Autorización Red', latency: 150, threshold: 200 },
+  { stage: 'Respuesta Emisor', latency: 320, threshold: 400 },
+  { stage: 'Confirmación Final', latency: 25, threshold: 50 },
 ];
 
 const recentTransactions = [
-  { id: 'TXN001', type: 'Debit', amount: '$125.50', status: 'Success', latency: '245ms', timestamp: '14:25:30' },
-  { id: 'TXN002', type: 'Credit', amount: '$2,500.00', status: 'Failed', latency: '1,200ms', timestamp: '14:25:28', error: 'Gateway Timeout' },
-  { id: 'TXN003', type: 'Debit', amount: '$45.00', status: 'Success', latency: '180ms', timestamp: '14:25:26' },
-  { id: 'TXN004', type: 'Credit', amount: '$850.75', status: 'Rejected', latency: '95ms', timestamp: '14:25:24', error: 'Fraud Detected' },
-  { id: 'TXN005', type: 'Debit', amount: '$200.00', status: 'Success', latency: '210ms', timestamp: '14:25:22' },
+  { id: 'TXN001', type: 'Débito', amount: '$125.50', status: 'Exitosa', latency: '245ms', timestamp: '14:25:30' },
+  { id: 'TXN002', type: 'Crédito', amount: '$2,500.00', status: 'Fallida', latency: '1,200ms', timestamp: '14:25:28', error: 'Timeout Gateway' },
+  { id: 'TXN003', type: 'Débito', amount: '$45.00', status: 'Exitosa', latency: '180ms', timestamp: '14:25:26' },
+  { id: 'TXN004', type: 'Crédito', amount: '$850.75', status: 'Rechazada', latency: '95ms', timestamp: '14:25:24', error: 'Fraude Detectado' },
+  { id: 'TXN005', type: 'Débito', amount: '$200.00', status: 'Exitosa', latency: '210ms', timestamp: '14:25:22' },
 ];
 
 export const TransactionFlowSection = () => {
@@ -43,8 +43,8 @@ export const TransactionFlowSection = () => {
                 <TrendingUp className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-card-foreground">Transaction Flow</h2>
-                <p className="text-sm text-muted-foreground">Detailed payment processing analysis</p>
+                <h2 className="text-xl font-bold text-card-foreground">Flujo de Transacciones</h2>
+                <p className="text-sm text-muted-foreground">Análisis detallado del procesamiento de pagos</p>
               </div>
             </div>
             <ChevronDown className={`w-5 h-5 text-primary transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -56,7 +56,7 @@ export const TransactionFlowSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Funnel de Conversión */}
           <Card className="p-6 bg-card/50 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Conversion Funnel</h3>
+            <h3 className="text-lg font-semibold text-card-foreground mb-4">Embudo de Conversión</h3>
             <div className="space-y-3">
               {funnelData.map((item, index) => (
                 <div key={item.stage} className="relative">
@@ -78,7 +78,7 @@ export const TransactionFlowSection = () => {
                   </div>
                   {index < funnelData.length - 1 && (
                     <div className="text-xs text-danger mt-1">
-                      Lost: {(funnelData[index].count - funnelData[index + 1].count).toLocaleString()}
+                      Pérdida: {(funnelData[index].count - funnelData[index + 1].count).toLocaleString()}
                     </div>
                   )}
                 </div>
@@ -88,7 +88,7 @@ export const TransactionFlowSection = () => {
 
           {/* Latencia por Etapa */}
           <Card className="p-6 bg-card/50 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Latency per Stage (p95)</h3>
+            <h3 className="text-lg font-semibold text-card-foreground mb-4">Latencia por Etapa (p95)</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={latencyData} layout="horizontal">
@@ -101,7 +101,7 @@ export const TransactionFlowSection = () => {
                       border: '1px solid hsl(var(--border))',
                       borderRadius: '8px'
                     }}
-                    formatter={(value, name) => [`${value}ms`, name === 'latency' ? 'Current Latency' : 'Threshold']}
+                    formatter={(value, name) => [`${value}ms`, name === 'latency' ? 'Latencia Actual' : 'Umbral']}
                   />
                   <Bar dataKey="latency" name="latency">
                     {latencyData.map((entry, index) => (
@@ -120,18 +120,18 @@ export const TransactionFlowSection = () => {
           <Card className="p-6 bg-card/50 backdrop-blur-sm lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <Clock className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-card-foreground">Recent Transactions</h3>
+              <h3 className="text-lg font-semibold text-card-foreground">Transacciones Recientes</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border">
                     <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">Timestamp</th>
-                    <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">Transaction ID</th>
-                    <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">Type</th>
-                    <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">Amount</th>
-                    <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">Status</th>
-                    <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">Latency</th>
+                    <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">ID Transacción</th>
+                    <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">Tipo</th>
+                    <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">Monto</th>
+                    <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">Estado</th>
+                    <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">Latencia</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -144,11 +144,11 @@ export const TransactionFlowSection = () => {
                       <td className="py-2 px-3">
                         <div className="flex items-center gap-2">
                           <Badge 
-                            variant={tx.status === 'Success' ? 'default' : 'destructive'}
+                            variant={tx.status === 'Exitosa' ? 'default' : 'destructive'}
                             className={
-                              tx.status === 'Success' 
+                              tx.status === 'Exitosa' 
                                 ? 'bg-success text-success-foreground' 
-                                : tx.status === 'Failed'
+                                : tx.status === 'Fallida'
                                 ? 'bg-danger text-danger-foreground'
                                 : 'bg-warning text-warning-foreground'
                             }
