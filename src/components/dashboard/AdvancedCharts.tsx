@@ -30,19 +30,19 @@ const fraudHeatmapData = [
 ];
 
 const vendorRiskData = [
-  { name: 'ABC Corp', value: 82, color: 'hsl(var(--danger))' },
-  { name: 'XYZ Bank', value: 45, color: 'hsl(var(--warning))' },
-  { name: 'FinTech Pro', value: 28, color: 'hsl(var(--success))' },
-  { name: 'PayProcess', value: 35, color: 'hsl(var(--warning))' },
-  { name: 'Otros', value: 15, color: 'hsl(var(--muted))' },
+  { name: 'Fiserv', value: 82, color: 'hsl(var(--danger))' },
+  { name: 'FIS', value: 45, color: 'hsl(var(--warning))' },
+  { name: 'Stripe', value: 28, color: 'hsl(var(--success))' },
+  { name: 'Adyen', value: 35, color: 'hsl(var(--warning))' },
+  { name: 'Others', value: 15, color: 'hsl(var(--muted))' },
 ];
 
 const incidentsByCauseData = [
-  { cause: 'Falla Hardware', count: 5, fill: 'hsl(var(--danger))' },
-  { cause: 'Bug Software', count: 12, fill: 'hsl(var(--warning))' },
-  { cause: 'Error Humano', count: 3, fill: 'hsl(var(--primary))' },
-  { cause: 'Problema Tercero', count: 8, fill: 'hsl(var(--accent))' },
-  { cause: 'Capacidad', count: 4, fill: 'hsl(var(--muted))' },
+  { cause: 'Hardware Failure', count: 5, fill: 'hsl(var(--danger))' },
+  { cause: 'Software Bug', count: 12, fill: 'hsl(var(--warning))' },
+  { cause: 'Human Error', count: 3, fill: 'hsl(var(--primary))' },
+  { cause: 'Third Party Issue', count: 8, fill: 'hsl(var(--accent))' },
+  { cause: 'Capacity', count: 4, fill: 'hsl(var(--muted))' },
 ];
 
 interface GaugeProps {
@@ -96,7 +96,7 @@ export const FraudHeatmap = () => {
 
   return (
     <Card className="p-6 bg-card/50 backdrop-blur-sm col-span-full">
-      <h3 className="text-lg font-semibold text-card-foreground mb-4">Mapa de Calor - Intentos de Fraude</h3>
+      <h3 className="text-lg font-semibold text-card-foreground mb-4">Fraud Attempts Heatmap</h3>
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full">
           <div className="grid grid-cols-8 gap-1 text-xs">
@@ -139,7 +139,7 @@ export const FraudHeatmap = () => {
 export const VendorRiskPie = () => {
   return (
     <Card className="p-6 bg-card/50 backdrop-blur-sm">
-      <h3 className="text-lg font-semibold text-card-foreground mb-4">Riesgo de Concentración por Proveedor</h3>
+      <h3 className="text-lg font-semibold text-card-foreground mb-4">Vendor Concentration Risk</h3>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -157,7 +157,7 @@ export const VendorRiskPie = () => {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip formatter={(value) => [`${value}%`, 'Concentración']} />
+            <Tooltip formatter={(value) => [`${value}%`, 'Concentration']} />
           </PieChart>
         </ResponsiveContainer>
       </div>
@@ -168,7 +168,7 @@ export const VendorRiskPie = () => {
 export const IncidentsByCause = () => {
   return (
     <Card className="p-6 bg-card/50 backdrop-blur-sm">
-      <h3 className="text-lg font-semibold text-card-foreground mb-4">Incidentes por Causa Raíz</h3>
+      <h3 className="text-lg font-semibold text-card-foreground mb-4">Incidents by Root Cause</h3>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={incidentsByCauseData}>
@@ -202,7 +202,7 @@ export const GaugeSection = () => {
           value={3} 
           max={20} 
           thresholds={{ low: 5, medium: 10, high: 15 }}
-          title="Vulnerabilidades Críticas"
+          title="Critical Vulnerabilities"
         />
       </Card>
       
@@ -211,7 +211,7 @@ export const GaugeSection = () => {
           value={9} 
           max={15} 
           thresholds={{ low: 5, medium: 10, high: 12 }}
-          title="Tasa Phishing"
+          title="Phishing Rate"
           unit="%"
         />
       </Card>
@@ -221,7 +221,7 @@ export const GaugeSection = () => {
           value={96} 
           max={100} 
           thresholds={{ low: 80, medium: 90, high: 95 }}
-          title="Finalización Capacitación"
+          title="Training Completion"
           unit="%"
         />
       </Card>
